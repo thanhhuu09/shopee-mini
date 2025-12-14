@@ -14,7 +14,12 @@ class MockProductRepository implements ProductRepository {
 
   async listActive(): Promise<Product[]> {
     const products = await this.listAll();
-    return products.filter((product) => product.isActive);
+    return products
+      .filter((product) => product.isActive)
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      );
   }
 
   async findBySlug(slug: string): Promise<Product | undefined> {
