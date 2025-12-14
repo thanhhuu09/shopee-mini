@@ -16,7 +16,7 @@ export default async function ProductDetailPage({
   const repository = createProductRepository();
   const product = await repository.findBySlug(slug);
 
-  if (!product) {
+  if (!product || !product.isActive) {
     notFound();
   }
 
