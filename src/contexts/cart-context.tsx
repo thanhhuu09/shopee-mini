@@ -35,24 +35,28 @@ export type CartContextValue = {
 const CartContext = createContext<CartContextValue | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>(() => {
-    if (typeof window === "undefined") {
-      return [];
-    }
-
-    try {
-      const stored = window.sessionStorage.getItem(STORAGE_KEY);
-      if (!stored) return [];
-      const parsed = JSON.parse(stored) as { items?: CartItem[] };
-      return parsed?.items ?? [];
-    } catch (error) {
-      console.error("Failed to read cart from sessionStorage", error);
-      return [];
-    }
-  });
+  const [items, setItems] = useState<CartItem[]>([]);
+  const [hasHydrated, setHasHydrated] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+    try {
+      const stored = window.sessionStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored) as { items?: CartItem[] };
+        if (parsed?.items) {
+          setItems(parsed.items);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to read cart from sessionStorage", error);
+    } finally {
+      setHasHydrated(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!hasHydrated || typeof window === "undefined") return;
     try {
       window.sessionStorage.setItem(
         STORAGE_KEY,
@@ -61,7 +65,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     } catch (error) {
       console.error("Failed to persist cart", error);
     }
-  }, [items]);
+  }, [items, hasHydrated]);
 
   const addItem = useCallback(
     (item: Omit<CartItem, "quantity">, quantity: number, inventory: number) => {
