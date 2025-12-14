@@ -9,8 +9,8 @@ export function CartBadge() {
 
   return (
     <Link
-      href="#cart"
-      className="inline-flex items-center gap-2 rounded-full border border-orange-200 px-4 py-2 text-sm font-semibold text-orange-600 hover:bg-orange-50"
+      href="/cart"
+      className="inline-flex items-center gap-2 rounded-full border border-orange-200 px-4 py-2 text-sm font-semibold text-orange-600 transition hover:bg-orange-50"
       aria-label={`Open cart with ${totalQuantity} item${totalQuantity === 1 ? "" : "s"}`}
     >
       Cart
