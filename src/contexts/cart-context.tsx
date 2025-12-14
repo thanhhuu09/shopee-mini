@@ -153,24 +153,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   );
 
   const updateQuantity = useCallback((productId: string, desiredQuantity: number) => {
-    setItems((current) => {
-      const next = current
-        .map((item) => {
-          if (item.productId !== productId) {
-            return item;
-          }
+    setItems((current) =>
+      current.map((item) => {
+        if (item.productId !== productId) {
+          return item;
+        }
 
-          if (desiredQuantity <= 0) {
-            return null;
-          }
-
-          const normalized = clampQuantity(Math.floor(desiredQuantity), item.inventory);
-          return { ...item, quantity: normalized };
-        })
-        .filter((line): line is CartItem => Boolean(line));
-
-      return next;
-    });
+        const normalized = clampQuantity(desiredQuantity, item.inventory);
+        return { ...item, quantity: normalized || 1 };
+      }),
+    );
   }, []);
 
   const removeItem = useCallback((productId: string) => {
