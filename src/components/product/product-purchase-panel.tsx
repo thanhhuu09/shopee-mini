@@ -39,14 +39,17 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
       return;
     }
 
-    if (value <= 0) {
-      setQuantity(1);
+    const normalized = Math.floor(value);
+    const clamped =
+      available === 0 ? 0 : Math.max(1, Math.min(normalized, available));
+
+    if (value > available) {
+      setFeedback(`Only ${available} unit${available === 1 ? "" : "s"} available`);
+    } else {
       setFeedback(null);
-      return;
     }
 
-    setFeedback(null);
-    setQuantity(value);
+    setQuantity(clamped);
   };
 
   const handleAddToCart = () => {
@@ -97,6 +100,7 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
           type="number"
           min={available > 0 ? 1 : 0}
           max={available}
+          step={1}
           value={displayQuantity}
           onChange={(event) => handleQuantityChange(Number(event.target.value))}
           className="w-32 rounded-xl border border-orange-200 px-4 py-2 text-lg font-semibold text-zinc-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-500 disabled:cursor-not-allowed disabled:bg-orange-50"
