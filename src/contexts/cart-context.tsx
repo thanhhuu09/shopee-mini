@@ -160,7 +160,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         }
 
         const normalized = clampQuantity(desiredQuantity, item.inventory);
-        return { ...item, quantity: normalized || 1 };
+        if (!normalized) {
+          return item;
+        }
+        return { ...item, quantity: normalized };
       }),
     );
   }, []);
